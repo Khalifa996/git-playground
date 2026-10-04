@@ -1,0 +1,9 @@
+# Local provider plugins and module cache (re-created by terraform init)
+.terraform/
+# State files can contain secrets. Never commit them; use a remote backend.
+*.tfstate
+*.tfstate.*
+crash.log
+# tfvars often hold personal values (your IP, key names)
+*.tfvars
+!*.tfvars.example
