@@ -1,0 +1,87 @@
+# ci.yml: the continuous integration (CI) pipeline.
+# GitHub runs any YAML file in .github/workflows/ automatically when its trigger fires.
+# Two jobs run side by side:
+#   1. tflint       lints every Terraform file in the repo.
+#   2. docker-build builds the app's Docker image to prove the Dockerfile still compiles.
+# Nothing is pushed or deployed. This is a safety net that goes red the moment someone breaks the build.
+
+name: CI                                       # The name shown in the GitHub "Actions" tab and on PR checks.
+
+on:                                            # "on" lists the events that start this workflow.
+  push:                                        # Trigger 1: commits pushed...
+    branches: [main]                           # ...to main (this includes every merged pull request).
+  pull_request:                                # Trigger 2: a pull request opened or updated...
+    branches: [main]                           # ...that targets main. Catches problems BEFORE they are merged.
+  workflow_dispatch:                           # Trigger 3: a "Run workflow" button in the Actions tab, handy for re-runs.
+
+permissions:                                   # Permissions for the automatic GITHUB_TOKEN that every job receives.
+  contents: read                               # Read-only access to the repo. Least privilege: CI only needs to read code.
+
+concurrency:                                   # Stops runs for the same branch piling up.
+  group: ci-${{ github.ref }}                  # One queue per branch or PR. ${{ }} is GitHub's expression syntax.
+  cancel-in-progress: true                     # A newer push cancels the older run. Nothing is deployed, so cancelling is safe.
+
+env:                                           # Variables available to every job. Change them here if your folders move.
+  APP_DIR: app                                 # Folder holding the Dockerfile and app source (the Docker build context).
+
+jobs:                                          # The jobs. They run in parallel unless one says "needs:".
+
+  tflint:                                      # Job 1: lint the Terraform code.
+    name: Lint Terraform (tflint)              # Friendly name shown in the GitHub UI and on PR checks.
+    runs-on: ubuntu-latest                     # A fresh GitHub-hosted Ubuntu VM. It is thrown away afterwards.
+    timeout-minutes: 10                        # Kill the job if it hangs. The default is 6 hours, which wastes minutes.
+    steps:                                     # Steps run in order. If one fails, the job stops and goes red.
+      - name: Check out code                   # Step 1: get the repo onto the runner.
+        uses: actions/checkout@v7              # Official action that clones the repo. "@v7" pins the major version.
+
+      - name: Set up tflint                    # Step 2: install the tflint binary.
+        uses: terraform-linters/setup-tflint@v6 # Official tflint action.
+        with:                                  # Inputs for the action.
+          tflint_version: v0.64.0              # Pin the exact version so CI behaves the same today and next month.
+          cache: true                          # Cache downloaded plugins (the AWS ruleset) between runs. Faster pipeline.
+
+      - name: Show tflint version              # Step 3: print the version into the log.
+        run: tflint --version                  # Useful when debugging "works on my machine" differences.
+
+      - name: Initialise tflint plugins        # Step 4: download the plugins listed in .tflint.hcl.
+        run: tflint --init --config "$GITHUB_WORKSPACE/.tflint.hcl" # $GITHUB_WORKSPACE is the repo root on the runner.
+        env:                                   # Extra environment variables for this step only.
+          GITHUB_TOKEN: ${{ github.token }}    # Plugins download from GitHub. A token avoids hitting the anonymous rate limit.
+
+      - name: Run tflint                       # Step 5: the actual lint.
+        run: >-                                # ">-" lets one long command span several lines (they are joined with spaces).
+          tflint
+          --recursive
+          --config "$GITHUB_WORKSPACE/.tflint.hcl"
+          --format compact
+        # --recursive : lint every folder containing .tf files, so it works wherever the Terraform lives.
+        # --config    : use the one root config for every folder (an absolute path, as --recursive changes directory).
+        # --format compact : one line per problem (file:line:col), easy to read in the Actions log.
+        # tflint exits non-zero when it finds an issue, which turns the job red and blocks the PR.
+
+  docker-build:                                # Job 2: build the Docker image. Runs at the same time as tflint.
+    name: Build Docker image                   # Friendly name.
+    runs-on: ubuntu-latest                     # Fresh Ubuntu VM. Docker is pre-installed on GitHub's Ubuntu runners.
+    timeout-minutes: 20                        # Builds take longer than linting, so allow a bit more time.
+    steps:                                     # Steps in order.
+      - name: Check out code                   # Step 1: get the repo.
+        uses: actions/checkout@v7              # Clone the repo.
+
+      - name: Set up Docker Buildx             # Step 2: install Buildx, Docker's modern builder (BuildKit).
+        uses: docker/setup-buildx-action@v4    # Needed for the GitHub Actions layer cache used below.
+
+      - name: Build image (no push)            # Step 3: build the image exactly as production would, but keep it local.
+        uses: docker/build-push-action@v7      # Official Docker action. Despite the name, it only pushes if told to.
+        with:                                  # Inputs.
+          context: ${{ env.APP_DIR }}          # The build context: the folder Docker can COPY files from.
+          file: ${{ env.APP_DIR }}/Dockerfile  # Which Dockerfile to build.
+          push: false                          # Do NOT push to a registry. We only want to prove it compiles.
+          load: true                           # Load the result into the runner's local Docker, so the next step can inspect it.
+          tags: app:ci-${{ github.sha }}       # Tag with the commit SHA, so the image is traceable to exact code.
+          cache-from: type=gha                 # Reuse layers cached by earlier runs. Unchanged layers are not rebuilt.
+          cache-to: type=gha,mode=max          # Save every layer (mode=max) to the cache for next time.
+
+      - name: Show image details               # Step 4: a quick sanity check on what was built.
+        run: |                                 # "|" keeps each line as a separate command.
+          docker image ls "app:ci-${GITHUB_SHA}"                                  # Show the image size. Watch it for bloat.
+          docker image inspect --format 'Runs as user: {{.Config.User}}' "app:ci-${GITHUB_SHA}" # Confirm the non-root USER is set.
