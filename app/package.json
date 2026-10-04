@@ -1,0 +1,21 @@
+{
+  "name": "hello-world-node",
+  "version": "1.0.0",
+  "description": "A tiny Hello World web app used to practise containerising Node.js.",
+  "private": true,
+  "main": "src/server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.1"
+  }
+}
