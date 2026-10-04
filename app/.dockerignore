@@ -1,0 +1,24 @@
+# .dockerignore
+# Anything listed here is NOT sent to Docker when you run "docker build".
+# Smaller build context = faster builds, and secrets never leak into images.
+
+# Installed on your laptop, rebuilt inside the image instead.
+# Your local node_modules may contain binaries built for macOS or Windows
+# that would break inside a Linux container.
+node_modules
+npm-debug.log*
+
+# Git history and editor clutter.
+.git
+.gitignore
+.vscode
+.idea
+*.md
+
+# Never ship secrets into an image. Anyone who can pull the image can read them.
+.env
+.env.*
+
+# The Dockerfile itself is not needed inside the image.
+Dockerfile
+.dockerignore
