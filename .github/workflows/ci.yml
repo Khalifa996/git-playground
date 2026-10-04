@@ -67,10 +67,22 @@ jobs:                                          # The jobs. They run in parallel 
       - name: Check out code                   # Step 1: get the repo.
         uses: actions/checkout@v7              # Clone the repo.
 
-      - name: Set up Docker Buildx             # Step 2: install Buildx, Docker's modern builder (BuildKit).
+      - name: Check a Dockerfile exists        # Step 2: skip the build cleanly if there is no app yet.
+        id: dockerfile                         # An id lets later steps read this step's outputs.
+        run: |                                 # "|" keeps each line as a separate command.
+          if [ -f "${APP_DIR}/Dockerfile" ]; then                        # -f tests that the file exists.
+            echo "found=true" >> "$GITHUB_OUTPUT"                        # Writing to $GITHUB_OUTPUT sets a step output.
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No ${APP_DIR}/Dockerfile yet, so the image build is skipped." # Shows as a notice on the run summary.
+          fi
+
+      - name: Set up Docker Buildx             # Step 3: install Buildx, Docker's modern builder (BuildKit).
+        if: steps.dockerfile.outputs.found == 'true' # Only run when step 2 found a Dockerfile.
         uses: docker/setup-buildx-action@v4    # Needed for the GitHub Actions layer cache used below.
 
-      - name: Build image (no push)            # Step 3: build the image exactly as production would, but keep it local.
+      - name: Build image (no push)            # Step 4: build the image exactly as production would, but keep it local.
+        if: steps.dockerfile.outputs.found == 'true' # Skipped until the app exists.
         uses: docker/build-push-action@v7      # Official Docker action. Despite the name, it only pushes if told to.
         with:                                  # Inputs.
           context: ${{ env.APP_DIR }}          # The build context: the folder Docker can COPY files from.
@@ -81,7 +93,8 @@ jobs:                                          # The jobs. They run in parallel 
           cache-from: type=gha                 # Reuse layers cached by earlier runs. Unchanged layers are not rebuilt.
           cache-to: type=gha,mode=max          # Save every layer (mode=max) to the cache for next time.
 
-      - name: Show image details               # Step 4: a quick sanity check on what was built.
+      - name: Show image details               # Step 5: a quick sanity check on what was built.
+        if: steps.dockerfile.outputs.found == 'true' # Nothing to inspect if nothing was built.
         run: |                                 # "|" keeps each line as a separate command.
           docker image ls "app:ci-${GITHUB_SHA}"                                  # Show the image size. Watch it for bloat.
           docker image inspect --format 'Runs as user: {{.Config.User}}' "app:ci-${GITHUB_SHA}" # Confirm the non-root USER is set.
