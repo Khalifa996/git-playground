@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en-GB" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop gifts — Pooh Corner, Hartfield (concept)</title>
+  <meta name="description" content="Independent redesign concept for the Pooh Corner online shop. Not the official website.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-page="shop">
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="shop-hero" aria-labelledby="shop-title">
+      <div class="wrap grid-2">
+        <div>
+          <p class="eyebrow">The Pooh Corner shop</p>
+          <h1 id="shop-title">Gifts from the home of <em>Pooh Country</em></h1>
+          <p class="lead">Chosen by the team in Hartfield and sent across the UK and worldwide.</p>
+          <form class="search-box" id="search-form" role="search">
+            <label class="visually-hidden" for="shop-search">Search gifts</label>
+            <span data-icon="search"></span>
+            <input class="field" id="shop-search" type="search" placeholder="Search soft toys, books, mugs…" autocomplete="off">
+          </form>
+        </div>
+        <div class="shipping-strip" id="delivery">
+          <div><span data-icon="truck"></span><span><strong>Free UK delivery</strong><br>on orders over £30</span></div>
+          <div><span data-icon="store"></span><span><strong>Collect in Hartfield</strong><br>choose collection at checkout</span></div>
+          <div><span data-icon="gift"></span><span><strong>Gift wrapping</strong><br>by our team on request</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Collections -->
+    <section class="section" aria-labelledby="coll-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Collections</p>
+            <h2 id="coll-title">Shop by collection</h2>
+          </div>
+        </div>
+        <div class="collection-cards">
+          <a class="collection-card" href="shop.html?cat=soft-toys" data-goto-cat="soft-toys"><div class="img"><img data-cover="classic-cuddly-winnie-the-pooh" alt="" loading="lazy"></div><h3>Soft toys</h3><span>Pooh, Piglet, Tigger &amp; Eeyore</span></a>
+          <a class="collection-card" href="shop.html?cat=books" data-goto-cat="books"><div class="img"><img data-cover="winnie-the-pooh-hb-100th-ed" alt="" loading="lazy"></div><h3>Books</h3><span>The original stories &amp; more</span></a>
+          <a class="collection-card" href="shop.html?cat=baby" data-goto-cat="baby"><div class="img"><img data-cover="hundred-acre-wood-eeyore-comfort-blanket" alt="" loading="lazy"></div><h3>Baby</h3><span>Comforters, rattles &amp; gift sets</span></a>
+          <a class="collection-card" href="shop.html?cat=collectables" data-goto-cat="collectables"><div class="img"><img data-cover="merrythought-little-edward-bear" alt="" loading="lazy"></div><h3>Collectables</h3><span>Merrythought bears &amp; fine china</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Centenary band -->
+    <section class="section section--forest on-dark centenary" aria-labelledby="c-title" style="padding:64px 0">
+      <div class="wrap" style="display:flex;flex-wrap:wrap;gap:24px 48px;align-items:center;justify-content:space-between">
+        <div style="display:flex;gap:28px;align-items:center">
+          <div class="big-num" aria-hidden="true" style="font-size:clamp(4.5rem,10vw,7rem)">100</div>
+          <div>
+            <p class="eyebrow" style="margin-bottom:6px">1926 — 2026</p>
+            <h2 id="c-title" style="margin:0;font-size:clamp(1.6rem,3vw,2.2rem)">The anniversary collection</h2>
+          </div>
+        </div>
+        <a class="btn btn--light" href="shop.html?cat=centenary" data-goto-cat="centenary">Shop 100 years</a>
+      </div>
+    </section>
+
+    <!-- From Pooh Corner -->
+    <section class="section section--white" aria-labelledby="pc-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Made for Pooh Corner</p>
+            <h2 id="pc-title">From Pooh Corner</h2>
+            <p class="muted" style="margin:0">Keepsakes carrying the Pooh Corner name — including honey from hives on Ashdown Forest.</p>
+          </div>
+          <a class="link-arrow" href="shop.html?cat=pooh-corner" data-goto-cat="pooh-corner">See all</a>
+        </div>
+        <div class="product-grid product-grid--4" data-products="pooh-corner-honey,i-played-poohsticks-button-badge,pooh-corner-hoodie,pooh-corner-keepsake-decoration"></div>
+      </div>
+    </section>
+
+    <!-- Full listing -->
+    <section class="section" id="listing" aria-labelledby="listing-title" style="scroll-margin-top:90px">
+      <div class="wrap">
+        <div class="section-head" style="margin-bottom:24px">
+          <div>
+            <p class="eyebrow">Browse</p>
+            <h2 id="listing-title">All gifts</h2>
+          </div>
+        </div>
+        <div class="cat-strip" role="group" aria-label="Filter by category">
+          <button class="chip" type="button" data-cat="all">All</button>
+          <button class="chip" type="button" data-cat="centenary">100 years</button>
+          <button class="chip" type="button" data-cat="soft-toys">Soft toys</button>
+          <button class="chip" type="button" data-cat="books">Books</button>
+          <button class="chip" type="button" data-cat="baby">Baby</button>
+          <button class="chip" type="button" data-cat="collectables">Collectables</button>
+          <button class="chip" type="button" data-cat="pooh-corner">From Pooh Corner</button>
+          <button class="chip" type="button" data-cat="home">Mugs &amp; home</button>
+          <button class="chip" type="button" data-cat="gift-cards">Gift cards</button>
+        </div>
+        <div class="toolbar">
+          <div class="filters">
+            <label for="budget">Budget</label>
+            <select id="budget">
+              <option value="any">Any price</option>
+              <option value="10">Under £10</option>
+              <option value="30">Under £30</option>
+              <option value="30plus">£30 and over</option>
+            </select>
+          </div>
+          <div class="filters">
+            <span id="result-count" class="small muted" aria-live="polite"></span>
+            <label for="sort" class="visually-hidden">Sort by</label>
+            <select id="sort">
+              <option value="featured">Featured</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+              <option value="az">A–Z</option>
+            </select>
+          </div>
+        </div>
+        <div class="product-grid product-grid--4" id="shop-grid"></div>
+        <p class="sim-note" style="margin-top:40px"><span data-icon="info"></span><span>Prototype: a representative selection of 27 products from the current shop, with names and prices as listed on 24 October 2026. The live build would keep the full Shopify catalogue, stock levels and checkout.</span></p>
+      </div>
+    </section>
+
+    <!-- Visit cross-link -->
+    <section class="section section--sage" aria-labelledby="xv-title">
+      <div class="wrap grid-2">
+        <img src="assets/img/pooh-corner-door.jpg" alt="The front door of Pooh Corner beneath its painted sign" loading="lazy" style="aspect-ratio:4/3;object-fit:cover;width:100%">
+        <div>
+          <p class="eyebrow">Come and see us</p>
+          <h2 id="xv-title">There's a real shop behind this one</h2>
+          <p>Browse the shelves in person, stop for tea and scones, and visit the free museum — on Hartfield High Street, open daily from 11am.</p>
+          <div class="btn-row"><a class="btn btn--primary" href="visit.html">Plan your visit</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/pages.js"></script>
+</body>
+</html>
